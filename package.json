@@ -6,7 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "start": "nest start --watch"
+    "example:gof": "nest start --watch",
+    "example:nest": "nest start --watch --entryFile nest"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
