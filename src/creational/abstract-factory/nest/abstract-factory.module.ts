@@ -6,15 +6,20 @@ import { MacCheckbox } from './products/mac-checkbox.service';
 import { WindowsFactory } from './factories/windows-factory.service';
 import { MacFactory } from './factories/mac-factory.service';
 
+export enum AbstractFactoryModuleProvide {
+  WIN = 'WIN',
+  MAC = 'MAC',
+}
+
 @Module({
   providers: [
     WindowsButton,
     WindowsCheckbox,
     MacButton,
     MacCheckbox,
-    WindowsFactory,
-    MacFactory,
+    { provide: AbstractFactoryModuleProvide.WIN, useClass: WindowsFactory },
+    { provide: AbstractFactoryModuleProvide.MAC, useClass: MacFactory },
   ],
-  exports: [WindowsFactory, MacFactory],
+  exports: [AbstractFactoryModuleProvide.WIN, AbstractFactoryModuleProvide.MAC],
 })
 export class AbstractFactoryModule {}
