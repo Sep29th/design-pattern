@@ -51,6 +51,61 @@ Xem file [`example.ts`](./example.ts)
 
 ## Diagram
 
+```java
+public interface OrderState {
+    void next(OrderContext ctx);
+    void cancel(OrderContext ctx);
+    String getStatus();
+}
+
+// Trạng thái Đã Thanh Toán
+class PaidState implements OrderState {
+    @Override
+    public void next(OrderContext ctx) {
+        ctx.setState(new ShippedState());
+        System.out.println("Đơn hàng đã được bàn giao cho đơn vị vận chuyển.");
+    }
+
+    @Override
+    public void cancel(OrderContext ctx) {
+        System.out.println("Đang hoàn tiền... Đơn hàng đã được hủy.");
+        ctx.setState(new CancelledState());
+    }
+
+    @Override
+    public String getStatus() { return "PAID"; }
+}
+
+// Trạng thái Đang Giao Hàng
+class ShippedState implements OrderState {
+    @Override
+    public void next(OrderContext ctx) {
+        ctx.setState(new DeliveredState());
+    }
+
+    @Override
+    public void cancel(OrderContext ctx) {
+        System.out.println("Lỗi: Không thể hủy đơn hàng khi đang trên đường giao!");
+    }
+
+    @Override
+    public String getStatus() { return "SHIPPED"; }
+}
+
+public class OrderContext {
+    private OrderState state = new NewOrderState(); // Mặc định là mới
+
+    public void setState(OrderState state) { this.state = state; }
+
+    public void nextStep() { state.next(this); }
+    public void cancelOrder() { state.cancel(this); }
+    
+    public void showStatus() {
+        System.out.println("Trạng thái đơn hàng: " + state.getStatus());
+    }
+}
+```
+
 ```mermaid
 classDiagram
     direction LR

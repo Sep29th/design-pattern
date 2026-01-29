@@ -53,6 +53,44 @@ Xem file [`example.ts`](./example.ts)
 
 ## Diagram
 
+```java
+// Interface chung cho tất cả các biểu thức
+interface Expression {
+    boolean interpret(Context context);
+}
+
+// Terminal Expression: Kiểm tra thu nhập
+class IncomeExpression implements Expression {
+    private int minIncome;
+    public IncomeExpression(int minIncome) { this.minIncome = minIncome; }
+    
+    @Override
+    public boolean interpret(Context context) {
+        return context.getIncome() >= minIncome;
+    }
+}
+
+// Non-terminal Expression: Phép AND
+class AndExpression implements Expression {
+    private Expression expr1, expr2;
+    public AndExpression(Expression e1, Expression e2) { this.expr1 = e1; this.expr2 = e2; }
+
+    @Override
+    public boolean interpret(Context context) {
+        return expr1.interpret(context) && expr2.interpret(context);
+    }
+}
+
+// Xây dựng cây biểu thức: (Income > 15tr AND CreditScore > 600)
+Expression rule = new AndExpression(
+    new IncomeExpression(15000000),
+    new CreditScoreExpression(600)
+);
+
+// Thực thi với dữ liệu khách hàng cụ thể
+boolean isEligible = rule.interpret(customerContext);
+```
+
 ```mermaid
 classDiagram
     direction LR

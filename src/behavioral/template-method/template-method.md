@@ -50,6 +50,41 @@ Xem file [`example.ts`](./example.ts)
 
 ## Diagram
 
+```java
+public abstract class DataMiner {
+    // Đây là Template Method
+    public final void exportData() {
+        connectToDB();
+        fetchData();
+        formatData(); // Bước này để lớp con triển khai
+        saveFile();
+        closeConnection();
+    }
+
+    private void connectToDB() { System.out.println("Đã kết nối Database."); }
+    private void fetchData() { System.out.println("Đã truy vấn dữ liệu thô."); }
+    private void saveFile() { System.out.println("Đã lưu file vào hệ thống."); }
+    private void closeConnection() { System.out.println("Đã đóng kết nối."); }
+
+    // Phương thức trừu tượng để lớp con tùy biến
+    protected abstract void formatData();
+}
+
+class PdfDataMiner extends DataMiner {
+    @Override
+    protected void formatData() {
+        System.out.println("Đang chuyển đổi dữ liệu sang định dạng PDF (sử dụng thư viện iText)...");
+    }
+}
+
+class CsvDataMiner extends DataMiner {
+    @Override
+    protected void formatData() {
+        System.out.println("Đang chuyển đổi dữ liệu sang định dạng CSV (phân tách bằng dấu phẩy)...");
+    }
+}
+```
+
 ```mermaid
 classDiagram
     direction TB

@@ -54,6 +54,58 @@ Xem file [`example.ts`](./example.ts)
 
 ## Diagram
 
+```java
+public interface StockObserver {
+    void update(String stockSymbol, double price);
+}
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class StockTicker {
+    private List<StockObserver> observers = new ArrayList<>();
+    private String symbol;
+    private double price;
+
+    public StockTicker(String symbol) { this.symbol = symbol; }
+
+    public void subscribe(StockObserver observer) {
+        observers.add(observer);
+    }
+
+    public void unsubscribe(StockObserver observer) {
+        observers.remove(observer);
+    }
+
+    public void setPrice(double newPrice) {
+        this.price = newPrice;
+        notifyObservers();
+    }
+
+    private void notifyObservers() {
+        for (StockObserver observer : observers) {
+            observer.update(symbol, price);
+        }
+    }
+}
+
+class MobileAppDisplay implements StockObserver {
+    @Override
+    public void update(String symbol, double price) {
+        System.out.println("Mobile App: Giá mã " + symbol + " vừa cập nhật thành: " + price);
+    }
+}
+
+class AutoTradingBot implements StockObserver {
+    @Override
+    public void update(String symbol, double price) {
+        if (price < 100.0) {
+            System.out.println("Bot: Giá thấp! Đang tự động đặt lệnh mua " + symbol);
+        }
+    }
+}
+```
+
 ```mermaid
 classDiagram
     direction LR

@@ -54,6 +54,61 @@ Xem file [`example.ts`](./example.ts)
 
 ## Diagram
 
+```java
+public interface ProfileIterator {
+    boolean hasNext();
+    Profile getNext();
+    void reset();
+}
+
+public class FacebookBFSIterator implements ProfileIterator {
+    private Facebook network;
+    private String profileId;
+    private List<Profile> cache = new ArrayList<>();
+    private int currentPosition = 0;
+
+    public FacebookBFSIterator(Facebook network, String profileId) {
+        this.network = network;
+        this.profileId = profileId;
+    }
+
+    private void lazyInit() {
+        if (cache.isEmpty()) {
+            // Thực hiện thuật toán BFS phức tạp ở đây để lấy danh sách bạn bè
+            // và lưu vào cache
+            cache = network.remoteRequestProfiles(profileId, "BFS");
+        }
+    }
+
+    @Override
+    public boolean hasNext() {
+        lazyInit();
+        return currentPosition < cache.size();
+    }
+
+    @Override
+    public Profile getNext() {
+        if (!hasNext()) return null;
+        return cache.get(currentPosition++);
+    }
+
+    @Override
+    public void reset() { currentPosition = 0; }
+}
+
+interface SocialNetwork {
+    ProfileIterator createFriendsIterator(String profileId);
+    ProfileIterator createCoworkersIterator(String profileId);
+}
+
+class Facebook implements SocialNetwork {
+    public ProfileIterator createFriendsIterator(String profileId) {
+        return new FacebookBFSIterator(this, profileId);
+    }
+    // ...
+}
+```
+
 ```mermaid
 classDiagram
     direction LR

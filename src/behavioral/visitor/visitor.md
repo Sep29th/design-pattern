@@ -54,6 +54,66 @@ Xem file [`example.ts`](./example.ts)
 
 ## Diagram
 
+```java
+public interface Product {
+    void accept(Visitor visitor);
+}
+
+class Electronics implements Product {
+    private double price;
+    public Electronics(double price) { this.price = price; }
+    public double getPrice() { return price; }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this); // Gửi chính nó cho khách xử lý
+    }
+}
+
+class Food implements Product {
+    private double weight;
+    private double pricePerKg;
+    public Food(double weight, double pricePerKg) { this.weight = weight; this.pricePerKg = pricePerKg; }
+    public double getPrice() { return weight * pricePerKg; }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+}
+
+public interface Visitor {
+    void visit(Electronics electronics);
+    void visit(Food food);
+}
+
+// Thuật toán tính thuế
+class TaxVisitor implements Visitor {
+    @Override
+    public void visit(Electronics e) {
+        System.out.println("Thuế điện tử (10%): " + (e.getPrice() * 0.1));
+    }
+
+    @Override
+    public void visit(Food f) {
+        System.out.println("Thuế thực phẩm (5%): " + (f.getPrice() * 0.05));
+    }
+}
+
+// Thuật toán tính điểm thưởng
+class RewardPointsVisitor implements Visitor {
+    @Override
+    public void visit(Electronics e) {
+        System.out.println("Điểm thưởng điện tử: " + (int)(e.getPrice() * 0.01));
+    }
+
+    @Override
+    public void visit(Food f) {
+        System.out.println("Điểm thưởng thực phẩm: " + (int)(f.getPrice() * 0.02));
+    }
+}
+```
+
 ```mermaid
 classDiagram
     direction LR

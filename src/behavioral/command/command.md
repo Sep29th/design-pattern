@@ -54,6 +54,102 @@ Xem file [`example.ts`](./example.ts)
 
 ## Diagram
 
+```java
+public interface Command {
+    boolean execute();
+    void undo();
+}
+
+// Logic Thanh toán
+class PaymentService {
+    public boolean processPayment() {
+        System.out.println("Đang thanh toán... Thành công!");
+        return true; 
+    }
+    public void refund() {
+        System.out.println("Hoàn tiền thành công.");
+    }
+}
+
+// Logic Kho bãi
+class InventoryService {
+    public boolean reserveStock() {
+        System.out.println("Đang giữ hàng trong kho... Thất bại!");
+        return false; // Giả sử bước này lỗi
+    }
+    public void releaseStock() {
+        System.out.println("Đã giải phóng hàng tồn kho.");
+    }
+}
+
+class PaymentCommand implements Command {
+    private PaymentService service;
+    public PaymentCommand(PaymentService service) { this.service = service; }
+
+    @Override
+    public boolean execute() { return service.processPayment(); }
+
+    @Override
+    public void undo() { service.refund(); }
+}
+
+class InventoryCommand implements Command {
+    private InventoryService service;
+    public InventoryCommand(InventoryService service) { this.service = service; }
+
+    @Override
+    public boolean execute() { return service.reserveStock(); }
+
+    @Override
+    public void undo() { service.releaseStock(); }
+}
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
+public class OrderSagaOrchestrator {
+    private List<Command> commands = new ArrayList<>();
+    private Stack<Command> history = new Stack<>();
+
+    public void addCommand(Command cmd) {
+        commands.add(cmd);
+    }
+
+    public void execute() {
+        for (Command cmd : commands) {
+            if (cmd.execute()) {
+                history.push(cmd);
+            } else {
+                System.err.println("Giao dịch thất bại. Đang kích hoạt tiến trình bù đắp (Compensating)...");
+                compensate();
+                return;
+            }
+        }
+        System.out.println("Giao dịch Saga hoàn tất thành công!");
+    }
+
+    private void compensate() {
+        while (!history.isEmpty()) {
+            history.pop().undo();
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        OrderSagaOrchestrator saga = new OrderSagaOrchestrator();
+
+        // Đăng ký các bước
+        saga.addCommand(new PaymentCommand(new PaymentService()));
+        saga.addCommand(new InventoryCommand(new InventoryService()));
+
+        // Thực thi
+        saga.execute();
+    }
+}
+```
+
 ```mermaid
 classDiagram
     direction LR

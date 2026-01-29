@@ -52,6 +52,54 @@ Xem file [`example.ts`](./example.ts)
 
 ## Diagram
 
+```java
+public interface WarehouseMediator {
+    void notify(Component sender, String event);
+}
+
+abstract class Component {
+    protected WarehouseMediator mediator;
+    public Component(WarehouseMediator mediator) { this.mediator = mediator; }
+}
+
+class Inventory extends Component {
+    public Inventory(WarehouseMediator m) { super(m); }
+    
+    public void checkStock() {
+        System.out.println("Inventory: Đang kiểm tra hàng...");
+        mediator.notify(this, "STOCK_READY");
+    }
+}
+
+class Shipping extends Component {
+    public Shipping(WarehouseMediator m) { super(m); }
+    
+    public void calculateFreight() {
+        System.out.println("Shipping: Đang tính phí vận chuyển...");
+        mediator.notify(this, "FREIGHT_CALCULATED");
+    }
+}
+
+class OrderMediator implements WarehouseMediator {
+    private Inventory inventory;
+    private Shipping shipping;
+    private Notification notification;
+
+    // Setter để đăng ký các component...
+
+    @Override
+    public void notify(Component sender, String event) {
+        if (event.equals("STOCK_READY")) {
+            System.out.println("Mediator: Hàng có sẵn, yêu cầu Shipping tính phí.");
+            shipping.calculateFreight();
+        } else if (event.equals("FREIGHT_CALCULATED")) {
+            System.out.println("Mediator: Phí vận chuyển xong, gửi thông báo khách hàng.");
+            notification.sendEmail();
+        }
+    }
+}
+```
+
 ```mermaid
 classDiagram
     direction LR
